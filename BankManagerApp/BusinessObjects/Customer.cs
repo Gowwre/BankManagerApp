@@ -3,9 +3,17 @@
 {
     public class Customer
     {
-        public string ID { get; set; }//CUSXXXX
+        public string ID { get; set; }
         public List<Account> Accounts = new List<Account>();
-        public decimal TotalBalance { get; set; } = 0;
+        private decimal _totalBalance;
+        public decimal TotalBalance
+        {
+            get => _totalBalance; set
+            {
+                foreach (var account in Accounts)
+                {
+                    _totalBalance += account.AccountBalance;
+                } } }
         public string Name { get; set; } = "Blank";
         public (string hamlet, string ward, string district, string city) Address { get; set; }
         public int TransactionCount { get; set; } = 0;
@@ -20,7 +28,6 @@
             ID = iD;
             Name = name;
             Address = address;
-            TotalBalance = GetTotalBalance();
         }
 
         public decimal GetTotalBalance()
@@ -38,19 +45,23 @@
         {
             //Input fields
 
-            string accountID = "ACC" + Utils.Utils.GenerateRandomNumString();
+            string accountNumber = "ACC" + Utils.Utils.GenerateRandomNumString();
+            while (GetAccount(accountNumber) != null)
+            {
+                accountNumber = "ACC" + Utils.Utils.GenerateRandomNumString();
+            }
 
             Console.WriteLine("Enter your initial account balance: ");
             if (decimal.TryParse(Console.ReadLine(), out decimal balance))
             {
-                if (balance>0)
+                if (balance > 0)
                 {
-                    Accounts.Add(new Account(accountID, balance));
+                    Accounts.Add(new Account(accountNumber, balance));
                     Console.WriteLine("Account added successfully");
                 }
                 else
                 {
-                    Console.WriteLine("You can't ");
+                    Console.WriteLine("You can't have a negative balance");
                 }
             }
             else
@@ -71,6 +82,22 @@
                 }
             }
             return null;
+        }
+
+
+        /// <summary>
+        /// Get the account with the highest balance
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="Exception">Throws Exception when there is no account in possession</exception>
+        public Account GetAccountWithHighestBalance()
+        {
+            if (Accounts.Count == 0)
+            {
+                throw new Exception("This customer possesses no account.");
+            }
+            var account = Accounts.MaxBy(x => x.AccountBalance);
+            return account;
         }
     }
 }

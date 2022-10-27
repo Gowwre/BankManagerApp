@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BankManagerApp.BusinessObjects
+﻿namespace BankManagerApp.BusinessObjects
 {
     public class Account : IComparable<Account>
     {
@@ -18,20 +12,20 @@ namespace BankManagerApp.BusinessObjects
             AccountBalance = accountBalance;
         }
 
-        public void AddNewTransaction(string transactionNumber,decimal amount,bool transactionType)
+        public void AddNewTransaction(string transactionNumber, decimal amount, bool withdrawOrDeposit)
         {
-            TransactionHistory.Add(new Transaction(transactionNumber, amount, transactionType));
+            TransactionHistory.Add(new Transaction(transactionNumber, amount, withdrawOrDeposit));
         }
-        
+
         public void Deposit()
         {
             Console.WriteLine("Enter the amount you want to deposit: ");
-            if (!decimal.TryParse(Console.ReadLine(),out decimal amount))
+            if (!decimal.TryParse(Console.ReadLine(), out decimal amount))
             {
                 Console.WriteLine("Please enter numbers only.");
                 return;
             }
-            if (amount<=0)
+            if (amount <= 0)
             {
                 Console.WriteLine("Amount of deposit must be positive");
                 return;
@@ -39,33 +33,31 @@ namespace BankManagerApp.BusinessObjects
 
             AccountBalance += amount;
 
-            bool transactionType = false;
-            string transactionString = "TRANS";
-            string randomNumString = Utils.Utils.GenerateRandomNumString();
-            
-            
-            string transactionNumber = transactionString + randomNumString;
-            while (GetTransaction(transactionNumber)!=null)
+            bool withdrawOrDeposit = false;
+
+
+
+            string transactionNumber = "TRANS" + Utils.Utils.GenerateRandomNumString();
+            while (GetTransaction(transactionNumber) != null)
             {
-                randomNumString = Utils.Utils.GenerateRandomNumString();
-                transactionNumber = transactionString + randomNumString;
+                transactionNumber = "TRANS" + Utils.Utils.GenerateRandomNumString();
             }
-            AddNewTransaction(transactionNumber,amount,transactionType);
+            AddNewTransaction(transactionNumber, amount, withdrawOrDeposit);
         }
 
         public void Withdraw()
         {
             Console.WriteLine("Enter the amount you want to withdraw: ");
-            if (!decimal.TryParse(Console.ReadLine(),out decimal amount))
+            if (!decimal.TryParse(Console.ReadLine(), out decimal amount))
             {
                 Console.WriteLine("Please enter numbers only.");
                 return;
             }
 
-            if (amount<=0)
+            if (amount <= 0)
             {
                 Console.WriteLine("Amount of withdrawal must be positive.");
-                return ;
+                return;
             }
 
             if (AccountBalance - amount < 0)
@@ -75,26 +67,21 @@ namespace BankManagerApp.BusinessObjects
             }
 
             AccountBalance -= amount;
-            
-            bool transactionType = true;
-            string transactionString = "TRANS";
-            string randomNumString = Utils.Utils.GenerateRandomNumString();
 
-
-            string transactionNumber = transactionString + randomNumString;
+            bool withdrawOrDeposit = true;
+            string transactionNumber = "TRANS" + Utils.Utils.GenerateRandomNumString();
             while (GetTransaction(transactionNumber) != null)
             {
-                randomNumString = Utils.Utils.GenerateRandomNumString();
-                transactionNumber = transactionString + randomNumString;
+                transactionNumber = "TRANS" + Utils.Utils.GenerateRandomNumString();
             }
-            AddNewTransaction(transactionNumber, amount, transactionType);
+            AddNewTransaction(transactionNumber, amount, withdrawOrDeposit);
         }
 
         public Transaction GetTransaction(string transactionNumber)
         {
             foreach (var transaction in TransactionHistory)
             {
-                if (transaction.TransactionNumber==transactionNumber)
+                if (transaction.TransactionNumber == transactionNumber)
                 {
                     return transaction;
                 }

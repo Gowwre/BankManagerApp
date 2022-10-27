@@ -7,7 +7,7 @@ namespace BankManagerApp.BusinessObjects
         public string ID { get; private set; }//TECHXXX
         public string Name { get; set; } = "Unknown";
         public (string hamlet, string ward, string district, string city) Address { get; set; }
-        public List<Customer> CustomerList { get; set; }
+        public List<Customer> CustomerList = new List<Customer>();
 
         public BankBranch(string iD, string name, (string hamlet, string ward, string district, string city) address)
         {
@@ -16,15 +16,36 @@ namespace BankManagerApp.BusinessObjects
             Address = address;
         }
 
+        public List<Account> GetAllAccountsWithHighestBalance()
+        {
+            List<Account> highestBalanceAccounts = new List<Account>();
+            if (CustomerList.Count==0)
+            {
+                Console.WriteLine("There is no customer here.");
+            }
+            foreach (var customer in CustomerList)
+            {
+                try
+                {
+                    var account = customer.GetAccountWithHighestBalance();
+                    highestBalanceAccounts.Add(account);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("There is no account in possession.");
+                }
+                
+            }
+            return highestBalanceAccounts;
+        }
+        
         public void AddNewCustomer()
         {
-            //Input the fields
-            string id = Console.ReadLine();
-            Regex custIDRegex = new Regex(Utils.Utils.CustomerIDFormat);
-            if (!custIDRegex.IsMatch(id))
+            
+            string customerID = "CUS" + Utils.Utils.GenerateRandomNumString();
+            while (GetCustomerByID(customerID)!=null)
             {
-                Console.WriteLine("Wrong ID Format (CUSXXX where X is a digit from 0-9)");
-                return;
+                customerID = "CUS" + Utils.Utils.GenerateRandomNumString();
             }
             string name = Console.ReadLine();
             string hamlet = Console.ReadLine();
@@ -33,7 +54,7 @@ namespace BankManagerApp.BusinessObjects
             string city = Console.ReadLine();
             (string hamlet, string ward, string district, string city) address = (hamlet, ward, district, city);
 
-            CustomerList.Add(new Customer(id, name, address));
+            CustomerList.Add(new Customer(customerID, name, address));
         }
 
         public void DisplayEveryTransactions()
@@ -41,7 +62,9 @@ namespace BankManagerApp.BusinessObjects
             //For each customer in the list, get all the transaction history
             foreach (var transaction in GetAllTransactions())
             {
-                Console.WriteLine(transaction);
+                string withdrawOrDeposit = transaction.WithdrawOrDeposit ? "Withdraw" : "Deposit";
+
+                Console.WriteLine($"Transaction Number : {transaction.TransactionNumber}\nTransaction Date: {transaction.TransactionDate}\nTransaction Amount: {transaction.TransactionAmount}\nTransaction Type: {withdrawOrDeposit}");
             }
         }
 

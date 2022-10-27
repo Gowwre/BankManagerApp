@@ -1,7 +1,6 @@
-﻿using System.Text.RegularExpressions;
-using BankManagerApp.BusinessObjects;
+﻿using BankManagerApp.BusinessObjects;
 using BankManagerApp.Interfaces;
-using BankManagerApp.Utils;
+using System.Text.RegularExpressions;
 
 namespace BankManagerApp.BusinessLogic
 {
@@ -57,9 +56,9 @@ namespace BankManagerApp.BusinessLogic
                 Console.WriteLine("This bank doesn't exist.");
                 return;
             }
-            BankBranch bankBranch = GetBankBranchByName("sample");
+            BankBranch bankBranch = GetBankBranchByName(bankBranchName);
 
-            string continueAddingCustomer = "n";
+            string continueAddingCustomer;
             do
             {
                 bankBranch.AddNewCustomer();
@@ -73,7 +72,7 @@ namespace BankManagerApp.BusinessLogic
         {
             //select bank branch
             Console.WriteLine("Which bank branch would you like to choose? ");
-            string bankBranchName = Console.ReadLine();
+            string bankBranchName = Console.ReadLine()??"";
             BankBranch bankBranch = GetBankBranchByName(bankBranchName);
             if (bankBranch == null)
             {
@@ -82,7 +81,7 @@ namespace BankManagerApp.BusinessLogic
             }
             //select customer
             Console.WriteLine("Which customer would you like to choose? ");
-            string customerName = Console.ReadLine();
+            string customerName = Console.ReadLine()??"";
             Customer customer = bankBranch.GetCustomerByName(customerName);
             if (customer == null)
             {
@@ -90,7 +89,7 @@ namespace BankManagerApp.BusinessLogic
                 return;
             }
             //add new account
-            string continueAddingAccounts = "n";
+            string continueAddingAccounts;
             do
             {
                 customer.AddNewAccount();
@@ -139,20 +138,10 @@ namespace BankManagerApp.BusinessLogic
         public void AddNewBankBranch()
         {
             //Get the fields
-            Console.WriteLine("Please input the ID for this bank branch: ");
-            string ID = Console.ReadLine();
-            Regex bankBranchIDRegex = new Regex(Utils.Utils.BankBranchIDFormat);
-
-            if (ID == null)
+            string bankBranchID = "TECH" + Utils.Utils.GenerateRandomNumString();
+            while (GetBankBranchByID(bankBranchID)!=null)
             {
-                Console.WriteLine("Null ID is prohibited.");
-                return;
-            }
-
-            else if (!bankBranchIDRegex.IsMatch(ID))
-            {
-                Console.WriteLine("Wrong ID Format (TECHXXX where X is a digit from 0-9)");
-                return;
+                bankBranchID = "TECH" + Utils.Utils.GenerateRandomNumString();
             }
 
             Console.WriteLine("Please input the name for this bank branch: ");
@@ -175,7 +164,7 @@ namespace BankManagerApp.BusinessLogic
             string city = Console.ReadLine() ?? "Not chosen";
             (string hamlet, string ward, string district, string city) address = (hamlet, ward, district, city);
 
-            BankBranches.Add(new BankBranch(ID, bankBranchName, address));
+            BankBranches.Add(new BankBranch(bankBranchID, bankBranchName, address));
             Console.WriteLine("Bank added successfully");
         }
 
@@ -203,6 +192,11 @@ namespace BankManagerApp.BusinessLogic
                 return;
             }
             BankBranch bankBranch = GetBankBranchByName(bankBranchName);
+            if (bankBranch==null)
+            {
+                Console.WriteLine("This bank doesn't exist.");
+                return;
+            }
             bankBranch.DisplayEveryTransactions();
 
         }
@@ -210,7 +204,7 @@ namespace BankManagerApp.BusinessLogic
         public void ListAllAccountsWithHighestBalance()
         {
             Console.WriteLine("Which bank branch?");
-            string bankBranchName = Console.ReadLine();
+            string bankBranchName = Console.ReadLine()??"";
             bool bankExisted = doesBankBranchNameExist(bankBranchName);
             if (!bankExisted)
             {
@@ -218,55 +212,53 @@ namespace BankManagerApp.BusinessLogic
                 return;
             }
             BankBranch bankBranch = GetBankBranchByName(bankBranchName);
-            //IEnumerable<Account> accountsWithHighestBalance  
+            foreach (var account in bankBranch.GetAllAccountsWithHighestBalance())
+            {
+                Console.WriteLine($"Account number : {account.AccountNumber}");
+            }
+
         }
 
         public void DisplayCustomersByTotalBalance()
         {
-            throw new NotImplementedException();
+            List<Customer> customers = GetAllCustomers().OrderBy(c=>c.TotalBalance).ToList();
+            foreach (var customer in customers)
+            {
+                Console.WriteLine($"Customer ID:{customer.ID}\nName:{customer.Name}\nAddress:{customer.Address.hamlet}, {customer.Address.ward}, {customer.Address.district}, {customer.Address.city}\nTotal balance: {customer.TotalBalance}");
+            }
+
         }
 
         public void DisplayCustomerWithTheMostTransactions()
         {
-            throw new NotImplementedException();
+            Customer customer = GetAllCustomers().MaxBy(x => x.TransactionCount);
+            if (customer==null)
+            {
+                Console.WriteLine("There is no customer available");
+                return;
+            }
+            Console.WriteLine("This is the customer with the highest transaction count");
+            Console.WriteLine($"Customer ID:{customer.ID}\nName:{customer.Name}\nAddress:{customer.Address.hamlet}, {customer.Address.ward}, {customer.Address.district}, {customer.Address.city}");
+        }
+
+        private List<Customer> GetAllCustomers()
+        {
+            List<Customer> allCustomers = new List<Customer>();
+            foreach (var bankBranch in BankBranches)
+            {
+                foreach (var customer in bankBranch.CustomerList)
+                {
+                    allCustomers.Add(customer);
+                }
+            }
+            return allCustomers;
         }
 
         public void DepositMoney()
         {
             //Get the bank branch name
             Console.WriteLine("Please enter the bank branch's name: ");
-            string bankBranchName = Console.ReadLine();
-            BankBranch bankBranch = GetBankBranchByName(bankBranchName);
-            if (bankBranch==null)
-            {
-                Console.WriteLine("This bank branch doesn't exist.");
-                return;
-            }
-
-            //Get the customer
-            Console.WriteLine("Please enter the customer's name: ");
-            string customerName = Console.ReadLine();
-            Customer customer = bankBranch.GetCustomerByName(customerName);
-            if (customer==null)
-            {
-                Console.WriteLine("This customer doesn't exist");
-                return;
-            }
-
-            //Get the account
-            Console.WriteLine("Please enter the account number: ");
-            string accountNumber = Console.ReadLine();
-            Regex accountNumberRegex = new Regex(Utils.Utils.AccountNumberFormat);
-            Account account = customer.GetAccount(accountNumber);
-
-            account.Deposit();
-        }
-
-        public void WithdrawMoney()
-        {
-            //Get the bank branch name
-            Console.WriteLine("Please enter the bank branch's name: ");
-            string bankBranchName = Console.ReadLine();
+            string bankBranchName = Console.ReadLine()??"";
             BankBranch bankBranch = GetBankBranchByName(bankBranchName);
             if (bankBranch == null)
             {
@@ -276,7 +268,7 @@ namespace BankManagerApp.BusinessLogic
 
             //Get the customer
             Console.WriteLine("Please enter the customer's name: ");
-            string customerName = Console.ReadLine();
+            string customerName = Console.ReadLine()??"";
             Customer customer = bankBranch.GetCustomerByName(customerName);
             if (customer == null)
             {
@@ -286,11 +278,60 @@ namespace BankManagerApp.BusinessLogic
 
             //Get the account
             Console.WriteLine("Please enter the account number: ");
-            string accountNumber = Console.ReadLine();
+            string accountNumber = Console.ReadLine() ?? "";
+            Regex accountNumberRegex = new Regex(Utils.Utils.AccountNumberFormat);
+            if (!accountNumberRegex.IsMatch(accountNumber))
+            {
+                Console.WriteLine("Wrong account format (ACCXXX where X is a digit from 0-9)");
+                return;
+            }
+            Account account = customer.GetAccount(accountNumber);
+            if (account == null)
+            {
+                Console.WriteLine("There's no such account.");
+                return;
+            }
+            account.Deposit();
+            customer.TransactionCount++;
+            Console.WriteLine("Deposit successfully");
+        }
+
+        public void WithdrawMoney()
+        {
+            //Get the bank branch name
+            Console.WriteLine("Please enter the bank branch's name: ");
+            string bankBranchName = Console.ReadLine()??"";
+            BankBranch bankBranch = GetBankBranchByName(bankBranchName);
+            if (bankBranch == null)
+            {
+                Console.WriteLine("This bank branch doesn't exist.");
+                return;
+            }
+
+            //Get the customer
+            Console.WriteLine("Please enter the customer's name: ");
+            string customerName = Console.ReadLine()??"";
+            Customer customer = bankBranch.GetCustomerByName(customerName);
+            if (customer == null)
+            {
+                Console.WriteLine("This customer doesn't exist");
+                return;
+            }
+
+            //Get the account
+            Console.WriteLine("Please enter the account number: ");
+            string accountNumber = Console.ReadLine()??"";
             Regex accountNumberRegex = new Regex(Utils.Utils.AccountNumberFormat);
             Account account = customer.GetAccount(accountNumber);
+            if (account == null)
+            {
+                Console.WriteLine("There's no such account.");
+                return;
+            }
 
             account.Withdraw();
+            customer.TransactionCount++;
+            Console.WriteLine("Withdraw successfully");
         }
     }
 }
