@@ -5,15 +5,11 @@
     {
         public string ID { get; set; }
         public List<Account> Accounts = new List<Account>();
-        private decimal _totalBalance;
+        //private decimal _totalBalance;
         public decimal TotalBalance
         {
-            get => _totalBalance; set
-            {
-                foreach (var account in Accounts)
-                {
-                    _totalBalance += account.AccountBalance;
-                } } }
+            get; set;
+        }
         public string Name { get; set; } = "Blank";
         public (string hamlet, string ward, string district, string city) Address { get; set; }
         public int TransactionCount { get; set; } = 0;
@@ -28,6 +24,7 @@
             ID = iD;
             Name = name;
             Address = address;
+            TotalBalance = GetTotalBalance();
         }
 
         public decimal GetTotalBalance()
@@ -39,6 +36,11 @@
             }
 
             return totalBalance;
+        }
+
+        public Account GetLatestAccount()
+        {
+            return Accounts.Last();
         }
 
         public void AddNewAccount()
@@ -92,10 +94,7 @@
         /// <exception cref="Exception">Throws Exception when there is no account in possession</exception>
         public Account GetAccountWithHighestBalance()
         {
-            if (Accounts.Count == 0)
-            {
-                throw new Exception("This customer possesses no account.");
-            }
+            
             var account = Accounts.MaxBy(x => x.AccountBalance);
             return account;
         }

@@ -47,13 +47,21 @@ namespace BankManagerApp.BusinessObjects
             {
                 customerID = "CUS" + Utils.Utils.GenerateRandomNumString();
             }
-            string name = Console.ReadLine();
-            string hamlet = Console.ReadLine();
-            string ward = Console.ReadLine();
-            string district = Console.ReadLine();
-            string city = Console.ReadLine();
-            (string hamlet, string ward, string district, string city) address = (hamlet, ward, district, city);
 
+            Console.WriteLine("Please input the name for this customer: ");
+            string name = Console.ReadLine()??"Not chosen";
+
+            Console.WriteLine("Please input the address for this customer: ");
+            Console.Write("Hamlet: ");
+            string hamlet = Console.ReadLine() ?? "Not chosen";
+            Console.Write("Ward: ");
+            string ward = Console.ReadLine() ?? "Not chosen";
+            Console.Write("District: ");
+            string district = Console.ReadLine() ?? "Not chosen";
+            Console.Write("City: ");
+            string city = Console.ReadLine() ?? "Not chosen";
+            (string hamlet, string ward, string district, string city) address = (hamlet, ward, district, city);
+            
             CustomerList.Add(new Customer(customerID, name, address));
         }
 

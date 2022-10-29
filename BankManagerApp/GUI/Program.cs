@@ -23,6 +23,7 @@ namespace BankManagerApp.GUI
                 Console.WriteLine("6. Display all accounts with highest balance");
                 Console.WriteLine("7. Display all customers by total balance");
                 Console.WriteLine("8. Display the customer with the most transactions");
+                Console.WriteLine("9. Deposit(D)/ Withdraw(W)");
                 Console.Write("Choice: ");
                 isValidChoice = int.TryParse(Console.ReadLine(), out int choice);
 

@@ -22,9 +22,14 @@ namespace BankManagerApp.BusinessLogic
             }
             //Prompt for customer name
             Console.Write("Please enter the customer name: ");
-            string customerName = Console.ReadLine();
+            string customerName = Console.ReadLine()??"";
+            if (customerName=="")
+            {
+                Console.WriteLine("Customer name can't be blank.");
+                return;
+            }
             Customer customer = bankBranch.GetCustomerByName(customerName);
-            if (customer == null || customerName == "")
+            if (customer == null)
             {
                 Console.WriteLine("This person does not exist.");
                 return;
@@ -44,8 +49,8 @@ namespace BankManagerApp.BusinessLogic
         {
             //Get the bank branch
             Console.WriteLine("Enter bank branch name: ");
-            string bankBranchName = Console.ReadLine();
-            if (bankBranchName == null)
+            string bankBranchName = Console.ReadLine()??"";
+            if (bankBranchName == "")
             {
                 Console.WriteLine("You can't leave this field empty.");
                 return;
@@ -93,10 +98,34 @@ namespace BankManagerApp.BusinessLogic
             do
             {
                 customer.AddNewAccount();
-                Console.WriteLine("Account added successfully!");
+                customer.TotalBalance += customer.GetLatestAccount().AccountBalance;
+                
                 Console.WriteLine("Do you want to add another account? (Y/N)");
                 continueAddingAccounts = Console.ReadLine() ?? "n";
             } while (continueAddingAccounts.Equals("y", StringComparison.OrdinalIgnoreCase));
+        }
+
+        public void WithdrawOrDeposit()
+        {
+            string input= Console.ReadLine()??"";
+            if (input=="")
+            {
+                Console.WriteLine("Blank spaces not allowed.");
+                return;
+            }
+            if (input.Equals("d",StringComparison.OrdinalIgnoreCase))
+            {
+                DepositMoney();
+            }
+            else if (input.Equals("w",StringComparison.OrdinalIgnoreCase))
+            {
+                WithdrawMoney();
+            }
+            else
+            {
+                Console.WriteLine("You can only input \"d\" or \"w\"");
+                return;
+            }
         }
 
         private BankBranch GetBankBranchByName(string bankBranchName)
@@ -177,16 +206,13 @@ namespace BankManagerApp.BusinessLogic
             }
         }
 
-        private BankBranch GetLatestBankBranch()
-        {
-            return BankBranches.Last();
-        }
+        
 
         public void DisplayAllTransactionHistory()
         {
             Console.WriteLine("Bank branch name: ");
-            string bankBranchName = Console.ReadLine();
-            if (bankBranchName == null)
+            string bankBranchName = Console.ReadLine() ?? "";
+            if (bankBranchName == "")
             {
                 Console.WriteLine("Bank name can't be null.");
                 return;
@@ -214,14 +240,21 @@ namespace BankManagerApp.BusinessLogic
             BankBranch bankBranch = GetBankBranchByName(bankBranchName);
             foreach (var account in bankBranch.GetAllAccountsWithHighestBalance())
             {
-                Console.WriteLine($"Account number : {account.AccountNumber}");
+                if (account == null)
+                {
+                    Console.Write("");
+                }
+                else
+                {
+                    Console.WriteLine($"Account number : {account.AccountNumber}");
+                }
             }
 
         }
 
         public void DisplayCustomersByTotalBalance()
         {
-            List<Customer> customers = GetAllCustomers().OrderBy(c=>c.TotalBalance).ToList();
+            List<Customer> customers = GetAllCustomers().OrderByDescending(cus=>cus.TotalBalance).ToList();
             foreach (var customer in customers)
             {
                 Console.WriteLine($"Customer ID:{customer.ID}\nName:{customer.Name}\nAddress:{customer.Address.hamlet}, {customer.Address.ward}, {customer.Address.district}, {customer.Address.city}\nTotal balance: {customer.TotalBalance}");
@@ -322,6 +355,11 @@ namespace BankManagerApp.BusinessLogic
             Console.WriteLine("Please enter the account number: ");
             string accountNumber = Console.ReadLine()??"";
             Regex accountNumberRegex = new Regex(Utils.Utils.AccountNumberFormat);
+            if (!accountNumberRegex.IsMatch(accountNumber))
+            {
+                Console.WriteLine("Wrong account number format (ACCXXX where X is a digit from 0-9");
+                return;
+            }
             Account account = customer.GetAccount(accountNumber);
             if (account == null)
             {
