@@ -180,6 +180,7 @@ namespace BankManagerApp.BusinessLogic
             if (bankBranchExist == true)
             {
                 Console.WriteLine("This bank branch already exists.");
+                Console.WriteLine();
                 return;
             }
             Console.WriteLine("Please input the address for this bank branch: ");
@@ -195,6 +196,7 @@ namespace BankManagerApp.BusinessLogic
 
             BankBranches.Add(new BankBranch(bankBranchID, bankBranchName, address));
             Console.WriteLine("Bank added successfully");
+            Console.WriteLine();
         }
 
         public void DisplayAllBankBranches()
@@ -204,6 +206,7 @@ namespace BankManagerApp.BusinessLogic
                 Console.WriteLine($"Branch ID:{bankBranch.ID}\nBranch Name:{bankBranch.Name}\nAddress: {bankBranch.Address.hamlet} hamlet, ward {bankBranch.Address.ward}, {bankBranch.Address.district} District, {bankBranch.Address.city} City");
                 Console.WriteLine();
             }
+            Console.WriteLine();
         }
 
         
@@ -224,7 +227,7 @@ namespace BankManagerApp.BusinessLogic
                 return;
             }
             bankBranch.DisplayEveryTransactions();
-
+            Console.WriteLine();
         }
 
         public void ListAllAccountsWithHighestBalance()
@@ -249,7 +252,7 @@ namespace BankManagerApp.BusinessLogic
                     Console.WriteLine($"Account number : {account.AccountNumber}");
                 }
             }
-
+            Console.WriteLine();
         }
 
         public void DisplayCustomersByTotalBalance()
@@ -259,7 +262,7 @@ namespace BankManagerApp.BusinessLogic
             {
                 Console.WriteLine($"Customer ID:{customer.ID}\nName:{customer.Name}\nAddress:{customer.Address.hamlet}, {customer.Address.ward}, {customer.Address.district}, {customer.Address.city}\nTotal balance: {customer.TotalBalance}");
             }
-
+            Console.WriteLine();
         }
 
         public void DisplayCustomerWithTheMostTransactions()
@@ -272,6 +275,7 @@ namespace BankManagerApp.BusinessLogic
             }
             Console.WriteLine("This is the customer with the highest transaction count");
             Console.WriteLine($"Customer ID:{customer.ID}\nName:{customer.Name}\nAddress:{customer.Address.hamlet}, {customer.Address.ward}, {customer.Address.district}, {customer.Address.city}");
+            Console.WriteLine();
         }
 
         private List<Customer> GetAllCustomers()
@@ -296,6 +300,7 @@ namespace BankManagerApp.BusinessLogic
             if (bankBranch == null)
             {
                 Console.WriteLine("This bank branch doesn't exist.");
+                Console.WriteLine();
                 return;
             }
 
@@ -306,6 +311,7 @@ namespace BankManagerApp.BusinessLogic
             if (customer == null)
             {
                 Console.WriteLine("This customer doesn't exist");
+                Console.WriteLine();
                 return;
             }
 
@@ -322,11 +328,14 @@ namespace BankManagerApp.BusinessLogic
             if (account == null)
             {
                 Console.WriteLine("There's no such account.");
+                Console.WriteLine();
                 return;
             }
             account.Deposit();
+            customer.UpdateTotalBalance();
             customer.TransactionCount++;
             Console.WriteLine("Deposit successfully");
+            Console.WriteLine();
         }
 
         public void WithdrawMoney()
@@ -338,6 +347,7 @@ namespace BankManagerApp.BusinessLogic
             if (bankBranch == null)
             {
                 Console.WriteLine("This bank branch doesn't exist.");
+                Console.WriteLine();
                 return;
             }
 
@@ -348,6 +358,7 @@ namespace BankManagerApp.BusinessLogic
             if (customer == null)
             {
                 Console.WriteLine("This customer doesn't exist");
+                Console.WriteLine();
                 return;
             }
 
@@ -357,17 +368,20 @@ namespace BankManagerApp.BusinessLogic
             Regex accountNumberRegex = new Regex(Utils.Utils.AccountNumberFormat);
             if (!accountNumberRegex.IsMatch(accountNumber))
             {
-                Console.WriteLine("Wrong account number format (ACCXXX where X is a digit from 0-9");
+                Console.WriteLine("Wrong account number format (ACCXXX where X is a digit from 0-9)");
+                Console.WriteLine();
                 return;
             }
             Account account = customer.GetAccount(accountNumber);
             if (account == null)
             {
                 Console.WriteLine("There's no such account.");
+                Console.WriteLine();
                 return;
             }
 
             account.Withdraw();
+            customer.UpdateTotalBalance();
             customer.TransactionCount++;
             Console.WriteLine("Withdraw successfully");
         }

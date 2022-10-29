@@ -38,6 +38,20 @@
             return totalBalance;
         }
 
+        /// <summary>
+        /// When a new account is added, or a transaction happens, this method will be called
+        /// </summary>
+        /// <param name="customer"></param>
+        public void UpdateTotalBalance()
+        {
+            this.TotalBalance = 0;
+            //If a new account is added
+            foreach (var acccount in this.Accounts)
+            {
+                this.TotalBalance += acccount.AccountBalance;
+            }
+        }
+
         public Account GetLatestAccount()
         {
             return Accounts.Last();
