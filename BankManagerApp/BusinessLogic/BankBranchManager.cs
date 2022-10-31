@@ -98,7 +98,7 @@ namespace BankManagerApp.BusinessLogic
             do
             {
                 customer.AddNewAccount();
-                customer.TotalBalance += customer.GetLatestAccount().AccountBalance;
+                customer.UpdateTotalBalance();
                 
                 Console.WriteLine("Do you want to add another account? (Y/N)");
                 continueAddingAccounts = Console.ReadLine() ?? "n";

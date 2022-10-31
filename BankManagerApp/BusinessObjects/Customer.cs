@@ -44,11 +44,11 @@
         /// <param name="customer"></param>
         public void UpdateTotalBalance()
         {
-            this.TotalBalance = 0;
+            TotalBalance = 0;
             //If a new account is added
-            foreach (var acccount in this.Accounts)
+            foreach (var acccount in Accounts)
             {
-                this.TotalBalance += acccount.AccountBalance;
+                TotalBalance += acccount.AccountBalance;
             }
         }
 
