@@ -1,12 +1,11 @@
-﻿using System;
+﻿using BankManagerApp.BusinessLogic;
 using BankManagerApp.Interfaces;
-using BankManagerApp.BusinessLogic;
 namespace BankManagerApp.GUI
-    
+
 {
     public class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             IBankBranchManager bankBranchManager = new BankBranchManager();
             bool isValidChoice = false;
@@ -62,11 +61,9 @@ namespace BankManagerApp.GUI
                         Console.WriteLine();
                         break;
                     case 9:
-                        bankBranchManager.WithdrawMoney();
+                        bankBranchManager.WithdrawOrDeposit();
                         break;
-                    case 10:
-                        bankBranchManager.DepositMoney();
-                        break;
+
                     default:
                         Console.WriteLine("App exited.");
                         break;

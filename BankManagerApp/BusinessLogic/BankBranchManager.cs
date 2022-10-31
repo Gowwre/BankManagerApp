@@ -291,7 +291,7 @@ namespace BankManagerApp.BusinessLogic
             return allCustomers;
         }
 
-        public void DepositMoney()
+        private void DepositMoney()
         {
             //Get the bank branch name
             Console.WriteLine("Please enter the bank branch's name: ");
@@ -338,7 +338,7 @@ namespace BankManagerApp.BusinessLogic
             Console.WriteLine();
         }
 
-        public void WithdrawMoney()
+        private void WithdrawMoney()
         {
             //Get the bank branch name
             Console.WriteLine("Please enter the bank branch's name: ");

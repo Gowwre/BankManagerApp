@@ -5,13 +5,13 @@
         void AddNewAccount();
         void AddNewBankBranch();
         void AddNewCustomer();
-        void DepositMoney();
+        
         void DisplayAllBankBranches();
         void DisplayAllTransactionHistory();
         void DisplayCustomerDetails();
         void DisplayCustomersByTotalBalance();
         void DisplayCustomerWithTheMostTransactions();
         void ListAllAccountsWithHighestBalance();
-        void WithdrawMoney();
+        void WithdrawOrDeposit();
     }
 }
